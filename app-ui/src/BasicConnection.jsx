@@ -2,7 +2,9 @@ import createEngine, { DiagramModel, DefaultNodeModel, DefaultPortModel, Default
 import { LinkWidget } from '@projectstorm/react-diagrams-core';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import styles from './BasicConnection.module.css'
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+
 
 
 export class AdvancedLinkModel extends DefaultLinkModel {
@@ -121,6 +123,7 @@ export class AdvancedLinkFactory extends DefaultLinkFactory {
 
 const Canvas = (props) => {
 
+
     const engine = createEngine();
     engine.getLinkFactories().registerFactory(new AdvancedLinkFactory());
 
@@ -130,7 +133,7 @@ const Canvas = (props) => {
 
     node1.registerListener({
         selectionChanged: function (e) {
-            console.log(e);
+            console.log({ id: e.entity.options.id, name: e.entity.options.name });
         },
         entityRemoved: function (e) {
             console.log(e);
@@ -138,33 +141,26 @@ const Canvas = (props) => {
     })
 
     const node2 = new DefaultNodeModel('Destination', `${props.destColor}`);
+
     const port2 = node2.addPort(new AdvancedPortModel(true, 'in'));
     node2.setPosition(500, 350);
 
     node2.registerListener({
         selectionChanged: function (e) {
-            console.log(e);
+            console.log({ id: e.entity.options.id, name: e.entity.options.name });
         },
         entityRemoved: function (e) {
+            console.log('entity');
             console.log(e);
         }
     })
 
-
-
     const model = new DiagramModel();
 
-    model.registerListener({
-        nodesUpdated: function (e) { console.log(e); },
-        linksUpdated: function (e) { console.log(e); },
-        offsetUpdated: function (e) { console.log(e); },
-        zoomUpdated: function (e) { console.log(e); },
-        selectionChanged: function (e) { console.log(e); },
-        entityRemoved: function (e) { console.log(e); }
-    })
 
 
     let link = port1.link(port2);
+
 
     if (link) {
         link.registerListener({
@@ -175,16 +171,19 @@ const Canvas = (props) => {
         })
     }
 
-    console.log(link)
+
 
     // add everything else
-    if (link)
-        model.addAll(node1, node2, link);
-    else
-        model.addAll(node1, node2);
+
+    model.addAll(node1, node2, link);
+
 
     // load model into engine
     engine.setModel(model);
+
+
+
+
 
     return <CanvasWidget className={styles.container} engine={engine} />
 

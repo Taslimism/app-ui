@@ -8,5 +8,8 @@
     "start": "concurrently \"nodemon server.js\" \"cd .. && npm start\""
   },
   "author": "Taslim Raza Ansari",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5"
+  }
 }
